@@ -2,6 +2,9 @@ import accommodationRepository from '@/repositories/accommodation-repository';
 
 async function getHotelsStatus() {
   const hotelsRooms = await accommodationRepository.findRoomsByHotels();
+  if (hotelsRooms.length === 0)
+    return hotelsRooms;
+  
   const reservationsAvailable = hotelsRooms.map(hotel => ({
     id: hotel.id,
     name: hotel.name,
@@ -13,7 +16,7 @@ async function getHotelsStatus() {
       .map(room => room.Reservation.length)
       .reduce((prev, curr) => prev + curr) : 0,    
   }));
-
+  
   return reservationsAvailable;
 }
 

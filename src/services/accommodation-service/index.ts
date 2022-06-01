@@ -6,14 +6,14 @@ async function getHotelsStatus() {
     id: hotel.id,
     name: hotel.name,
     rooms: hotel.Room.length,
-    capacity: hotel.Room
+    capacity: hotel.Room.length > 0 ? hotel.Room
       .map(room => room.AccommodationTypeRoom[0].AccommodationType.capacity)
-      .reduce((prev, curr) => prev + curr),
-    reservations: hotel.Room
+      .reduce((prev, curr) => prev + curr) : 0,
+    reservations: hotel.Room.length > 0 ? hotel.Room
       .map(room => room.Reservation.length)
-      .reduce((prev, curr) => prev + curr),    
+      .reduce((prev, curr) => prev + curr) : 0,    
   }));
-  
+
   return reservationsAvailable;
 }
 

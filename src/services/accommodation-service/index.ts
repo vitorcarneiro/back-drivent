@@ -1,13 +1,13 @@
 import accommodationRepository from '@/repositories/accommodation-repository';
 
-async function getHotelsRooms() {
-    const hotelsRooms = await accommodationRepository.findHotelsRooms();
+async function getRoomsByHotel() {
+    const hotelsRooms = await accommodationRepository.findRoomsByHotel();
 
     return hotelsRooms;
 }
 
 const accommodationService = {
-  getHotelsRooms,
+  getRoomsByHotel,
 };
 
 export default accommodationService;

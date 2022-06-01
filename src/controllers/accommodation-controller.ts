@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 
 export async function getHotelsRooms(req: Request, res: Response) {
-    const hotelsRooms = await accommodationService.getHotelsRooms();
+    const hotelsRooms = await accommodationService.getRoomsByHotel();
 
     res.status(httpStatus.OK).send(hotelsRooms);
 }

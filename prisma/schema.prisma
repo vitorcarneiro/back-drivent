@@ -11,13 +11,14 @@ datasource db {
 }
 
 model User {
-  id         Int          @id @default(autoincrement())
-  email      String       @unique @db.VarChar(255)
-  password   String       @db.VarChar(255)
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  Session    Session[]
-  Enrollment Enrollment[]
+  id            Int             @id @default(autoincrement())
+  email         String          @unique @db.VarChar(255)
+  password      String          @db.VarChar(255)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  Session       Session[]
+  Enrollment    Enrollment[]
+  Reservation   Reservation[]
 }
 
 model Session {
@@ -38,6 +39,7 @@ model Event {
   endsAt             DateTime
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+  Reservation        Reservation[]
 }
 
 model Enrollment {
@@ -75,27 +77,35 @@ model Hotel {
 }
 
 model Room {
-  id          Int         @id @default(autoincrement())
-  code        String      @unique @db.VarChar(255)
-  hotelId     Int
-  Hotel       Hotel       @relation(fields: [hotelId], references: [id])
+  id                      Int                       @id @default(autoincrement())
+  code                    String                    @unique @db.VarChar(255)
+  hotelId                 Int
+  Hotel                   Hotel                     @relation(fields: [hotelId], references: [id])
+  AccommodationTypeRoom   AccommodationTypeRoom[]
+  Reservation             Reservation[]
 }
 
 model AccommodationTypeRoom {
-  id                    Int       @id @default(autoincrement())
+  id                    Int                   @id @default(autoincrement())
   roomId                Int
-  AcommodationTypeId    Int
+  accommodationTypeId   Int
+  Room                  Room                  @relation(fields: [roomId], references: [id])
+  AccommodationType     AccommodationType     @relation(fields: [accommodationTypeId], references: [id])
 }
 
-model AcommodationType {
-  id                Int       @id @default(autoincrement())
-  name              String    @unique @db.VarChar(255)
-  capacity          Int
+model AccommodationType {
+  id                      Int       @id @default(autoincrement())
+  name                    String    @unique @db.VarChar(255)
+  capacity                Int
+  AccommodationTypeRoom   AccommodationTypeRoom[]
 }
 
 model Reservation {
   id                Int       @id @default(autoincrement())
-  name              String    @unique @db.VarChar(255)
-  capacity          Int
+  userId            Int
+  roomId            Int
   eventId           Int
+  User              User      @relation(fields: [userId], references: [id])
+  Room              Room      @relation(fields: [roomId], references: [id])
+  Event             Event     @relation(fields: [eventId], references: [id])
 }

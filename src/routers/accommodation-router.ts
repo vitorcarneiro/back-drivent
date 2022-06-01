@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { authenticateToken } from '@/middlewares';
-import { getHotelsRooms } from '@/controllers';
+import { getHotelsStatus } from '@/controllers';
 
 const accommodationRouter = Router();
 
 accommodationRouter
   .all('/*', authenticateToken)
-  .get('/', getHotelsRooms)
+  .get('/', getHotelsStatus)
 
 export { accommodationRouter };

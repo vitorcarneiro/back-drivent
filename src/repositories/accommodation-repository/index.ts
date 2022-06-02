@@ -1,4 +1,5 @@
 import { prisma } from '@/config';
+import { CreateOrUpdateBooking } from '@/services';
 
 async function findRoomsByHotels() {
   return prisma.hotel.findMany({
@@ -24,9 +25,20 @@ async function findRoomsByHotels() {
     },
   });
 }
+  
+async function findEventUserReservations(reservationData: CreateOrUpdateBooking) {
+  return prisma.reservation.findMany({
+    where: {
+      userId: reservationData.userId,
+      eventId: reservationData.eventId,
+    }
+  })
+
+}
 
 const accommodationRepository = {
-  findRoomsByHotels
+  findRoomsByHotels,
+  findEventUserReservations,
 };
 
 export default accommodationRepository;

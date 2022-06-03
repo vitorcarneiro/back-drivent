@@ -14,6 +14,7 @@ export async function postCreateOrUpdateReservation(req: AuthenticatedRequest, r
     ...req.body,
     userId: req.userId,
   });
-
+    
+    console.log(req.eventId);
   return res.send(reservations).status(httpStatus.OK);
 }

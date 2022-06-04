@@ -11,14 +11,14 @@ datasource db {
 }
 
 model User {
-  id            Int             @id @default(autoincrement())
-  email         String          @unique @db.VarChar(255)
-  password      String          @db.VarChar(255)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  Session       Session[]
-  Enrollment    Enrollment[]
-  Reservation   Reservation[]
+  id          Int           @id @default(autoincrement())
+  email       String        @unique @db.VarChar(255)
+  password    String        @db.VarChar(255)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Session     Session[]
+  Enrollment  Enrollment[]
+  Reservation Reservation[]
 }
 
 model Session {
@@ -31,14 +31,14 @@ model Session {
 }
 
 model Event {
-  id                 Int      @id @default(autoincrement())
-  title              String   @db.VarChar(255)
-  backgroundImageUrl String   @db.VarChar(255)
-  logoImageUrl       String   @db.VarChar(255)
+  id                 Int           @id @default(autoincrement())
+  title              String        @db.VarChar(255)
+  backgroundImageUrl String        @db.VarChar(255)
+  logoImageUrl       String        @db.VarChar(255)
   startsAt           DateTime
   endsAt             DateTime
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
   Reservation        Reservation[]
 }
 
@@ -71,41 +71,41 @@ model Address {
 }
 
 model Hotel {
-  id        Int         @id @default(autoincrement())
-  name      String      @unique @db.VarChar(255)
-  Room      Room[]
+  id   Int    @id @default(autoincrement())
+  name String @unique @db.VarChar(255)
+  Room Room[]
 }
 
 model Room {
-  id                      Int                       @id @default(autoincrement())
-  code                    String                    @unique @db.VarChar(255)
-  hotelId                 Int
-  Hotel                   Hotel                     @relation(fields: [hotelId], references: [id])
-  AccommodationTypeRoom   AccommodationTypeRoom[]
-  Reservation             Reservation[]
+  id                    Int                     @id @default(autoincrement())
+  code                  String                  @unique @db.VarChar(255)
+  hotelId               Int
+  Hotel                 Hotel                   @relation(fields: [hotelId], references: [id])
+  AccommodationTypeRoom AccommodationTypeRoom[]
+  Reservation           Reservation[]
 }
 
 model AccommodationTypeRoom {
-  id                    Int                   @id @default(autoincrement())
-  roomId                Int
-  accommodationTypeId   Int
-  Room                  Room                  @relation(fields: [roomId], references: [id])
-  AccommodationType     AccommodationType     @relation(fields: [accommodationTypeId], references: [id])
+  id                  Int               @id @default(autoincrement())
+  roomId              Int
+  accommodationTypeId Int
+  Room                Room              @relation(fields: [roomId], references: [id])
+  AccommodationType   AccommodationType @relation(fields: [accommodationTypeId], references: [id])
 }
 
 model AccommodationType {
-  id                      Int       @id @default(autoincrement())
-  name                    String    @unique @db.VarChar(255)
-  capacity                Int
-  AccommodationTypeRoom   AccommodationTypeRoom[]
+  id                    Int                     @id @default(autoincrement())
+  name                  String                  @unique @db.VarChar(255)
+  capacity              Int
+  AccommodationTypeRoom AccommodationTypeRoom[]
 }
 
 model Reservation {
-  id                Int       @id @default(autoincrement())
-  userId            Int
-  roomId            Int
-  eventId           Int
-  User              User      @relation(fields: [userId], references: [id])
-  Room              Room      @relation(fields: [roomId], references: [id])
-  Event             Event     @relation(fields: [eventId], references: [id])
+  id      Int   @id @default(autoincrement())
+  userId  Int   @unique
+  roomId  Int?
+  eventId Int
+  User    User  @relation(fields: [userId], references: [id])
+  Room    Room? @relation(fields: [roomId], references: [id])
+  Event   Event @relation(fields: [eventId], references: [id])
 }

@@ -101,11 +101,23 @@ model AccommodationType {
 }
 
 model Reservation {
-  id      Int   @id @default(autoincrement())
-  userId  Int   @unique
-  roomId  Int?
-  eventId Int
-  User    User  @relation(fields: [userId], references: [id])
-  Room    Room? @relation(fields: [roomId], references: [id])
-  Event   Event @relation(fields: [eventId], references: [id])
+  id          Int           @id @default(autoincrement())
+  userId      Int           @unique
+  roomId      Int?
+  eventId     Int
+  User        User          @relation(fields: [userId], references: [id])
+  Room        Room?         @relation(fields: [roomId], references: [id])
+  Event       Event         @relation(fields: [eventId], references: [id])
+  Transaction Transaction[]
+}
+
+model Transaction {
+  id               Int         @id @default(autoincrement())
+  hotelPrice       Int?
+  hotelSelected    String?
+  modalityPrice    Int
+  modalitySelected String
+  total            Int
+  reservationId    Int
+  Reservation      Reservation @relation(fields: [reservationId], references: [id])
 }

@@ -1,5 +1,8 @@
 import { prisma } from "@/config";
+import { Transaction } from "@prisma/client";
 import { CreateOrUpdateBooking, ReservationData } from "@/services";
+
+export type CreateTransactionData = Omit<Transaction, "id">;
 
 async function findRoomsByHotels() {
   return prisma.hotel.findMany({
@@ -30,8 +33,19 @@ async function createUserReservation(bookingData: ReservationData) {
   return prisma.reservation.create({ data: { ...bookingData } });
 }
 
+async function createUserTransaction(transactionData: CreateTransactionData) {
+  return prisma.transaction.create({ data: { ...transactionData } });
+}
+
 async function getReservationById(userId: number) {
-  return prisma.reservation.findFirst({ where: { userId } });
+  return prisma.reservation.findFirst({
+    include: {
+      Transaction: true,
+    },
+    where: {
+      userId,
+    },
+  });
 }
 
 async function findEventUserReservations(
@@ -48,6 +62,7 @@ async function findEventUserReservations(
 const accommodationRepository = {
   findRoomsByHotels,
   createUserReservation,
+  createUserTransaction,
   findEventUserReservations,
   getReservationById,
 };

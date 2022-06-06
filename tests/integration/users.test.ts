@@ -66,7 +66,7 @@ describe('POST /users', () => {
         const response = await server.post('/users').send(body);
 
         expect(response.status).toBe(httpStatus.CONFLICT);
-        expect(response.body).toEqual(duplicatedEmailError());
+        expect(response.body.message).toEqual(duplicatedEmailError().message);
       });
 
       it('should respond with status 201 and create user when given email is unique', async () => {

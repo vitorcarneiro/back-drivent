@@ -6,7 +6,7 @@ COPY ./package*.json ./
 COPY ./tsconfig*.json ./
 COPY ./prisma ./prisma
 COPY ./.husky ./
-RUN npm install
+RUN npm install --force
 COPY . .
 RUN npm run build
 

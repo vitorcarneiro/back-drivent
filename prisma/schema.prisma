@@ -103,6 +103,7 @@ model AccommodationType {
 model Reservation {
   id          Int           @id @default(autoincrement())
   userId      Int           @unique
+  hasHotel    Boolean       @default(false)
   roomId      Int?
   eventId     Int
   User        User          @relation(fields: [userId], references: [id])

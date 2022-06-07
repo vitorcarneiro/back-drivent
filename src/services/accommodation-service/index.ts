@@ -1,12 +1,14 @@
 import { notFoundError } from "@/errors";
 import accommodationRepository from "@/repositories/accommodation-repository";
-import { exclude } from "@/utils/prisma-utils";
 import { Reservation, Transaction } from "@prisma/client";
 
 async function getHotelsStatus() {
   const hotelsRooms = await accommodationRepository.findRoomsByHotels();
-  if (hotelsRooms.length === 0) return hotelsRooms;
+  const hotelsSelected = await accommodationRepository.transactionsWithHotel();
+  const rooms = await accommodationRepository.findRooms();
 
+  if (hotelsRooms.length === 0) return hotelsRooms;
+  
   const reservationsAvailable = hotelsRooms.map((hotel) => ({
     id: hotel.id,
     name: hotel.name,
@@ -18,14 +20,34 @@ async function getHotelsStatus() {
           ).reduce((prev, curr) => prev + curr)
         : 0,
     reservations:
-      hotel.Room.length > 0
-        ? hotel.Room.map((room) => room.Reservation.length).reduce(
-            (prev, curr) => prev + curr
-          )
-        : 0,
+      hotelsSelected._count
   }));
 
-  return reservationsAvailable;
+  return rooms;
+}
+
+async function getRooms(hotelId?: number) {
+  const rooms = await accommodationRepository.findRooms(hotelId);
+
+  const roomsMapped = rooms.map((room) => ({
+    id: room.id,
+    code: room.code,
+    hotelId: room.hotelId,
+    accommodationType: room.AccommodationTypeRoom[0].AccommodationType.name,
+    capacity: room.AccommodationTypeRoom[0].AccommodationType.capacity,
+  }));
+
+  return roomsMapped;
+}
+
+async function getTotalCapacity() {
+  const rooms = await getRooms();
+
+  const capacity = rooms.reduce((prev, curr) => prev + curr.capacity, 0);
+  
+  const reservations = (await (accommodationRepository.transactionsWithHotel()))._count;
+
+  return { capacity, reservations };
 }
 
 async function createOrUpdateBooking(bookingData: BookingData) {
@@ -79,6 +101,7 @@ export type CreateOrUpdateBooking = Omit<Reservation, "id" | "roomId">;
 
 const accommodationService = {
   getHotelsStatus,
+  getTotalCapacity,
   createOrUpdateBooking,
   getReservationById,
 };

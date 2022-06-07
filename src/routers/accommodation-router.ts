@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticateToken, validateBody } from "@/middlewares";
 import {
-  getHotelsStatus,
+  getTotalCapacity,
   postCreateOrUpdateReservation,
   getReservationById,
 } from "@/controllers";
@@ -11,7 +11,7 @@ const accommodationRouter = Router();
 
 accommodationRouter
   .all("/*", authenticateToken)
-  .get("/", getHotelsStatus)
+  .get("/", getTotalCapacity)
   .post(
     "/book",
     validateBody(createBookingSchema),

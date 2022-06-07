@@ -22,6 +22,8 @@ describe('createUser', () => {
       });
       fail('should throw duplicatedUserError');
     } catch (error) {
+      console.log(error);
+      
       expect(error).toEqual(duplicatedEmailError());
     }
   });

@@ -16,7 +16,6 @@ async function findRoomsByHotels() {
               id: true,
               userId: true,
               eventId: true,
-              hasHotel: true,
             },
           },
           AccommodationTypeRoom: {

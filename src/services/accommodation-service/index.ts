@@ -1,29 +1,25 @@
 import { notFoundError } from "@/errors";
 import accommodationRepository from "@/repositories/accommodation-repository";
-import { Reservation, Transaction } from "@prisma/client";
+import { AccommodationType, AccommodationTypeRoom, Prisma, Reservation, Transaction } from "@prisma/client";
 
-async function getHotelsStatus() {
+async function getHotels() {
   const hotelsRooms = await accommodationRepository.findRoomsByHotels();
-  const hotelsSelected = await accommodationRepository.transactionsWithHotel();
-  const rooms = await accommodationRepository.findRooms();
 
   if (hotelsRooms.length === 0) return hotelsRooms;
   
-  const reservationsAvailable = hotelsRooms.map((hotel) => ({
+  const hotels = hotelsRooms.map((hotel) => ({
     id: hotel.id,
     name: hotel.name,
+    accommodationTypes: accommodationTypes(hotel.Room),
     rooms: hotel.Room.length,
     capacity:
       hotel.Room.length > 0
-        ? hotel.Room.map(
-            (room) => room.AccommodationTypeRoom[0].AccommodationType.capacity
-          ).reduce((prev, curr) => prev + curr)
+        ? hotel.Room.reduce((prev, curr) => prev + curr.AccommodationTypeRoom[0].AccommodationType.capacity, 0)
         : 0,
-    reservations:
-      hotelsSelected._count
+    reservations: 0
   }));
 
-  return rooms;
+  return hotels;
 }
 
 async function getRooms(hotelId?: number) {
@@ -38,6 +34,19 @@ async function getRooms(hotelId?: number) {
   }));
 
   return roomsMapped;
+}
+
+function accommodationTypes(hotelRooms: any[]): string[] {
+  const types: string[] = [];
+
+  const rooms = hotelRooms.map((room) => (room.AccommodationTypeRoom[0].AccommodationType.name))
+  
+  for (const room of rooms) {
+    if (types.includes(room)) continue;
+    types.push(room);
+  }
+
+  return types;
 }
 
 async function getTotalCapacity() {
@@ -100,7 +109,7 @@ export type CreateBooking = Omit<Reservation, "id" | "userId">;
 export type CreateOrUpdateBooking = Omit<Reservation, "id" | "roomId">;
 
 const accommodationService = {
-  getHotelsStatus,
+  getHotels,
   getTotalCapacity,
   createOrUpdateBooking,
   getReservationById,

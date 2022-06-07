@@ -3,8 +3,20 @@ import accommodationService from "@/services/accommodation-service";
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 
-export async function getTotalCapacity(req: Request, res: Response) {
+export async function getTotalCapacity(
+  req: AuthenticatedRequest,
+  res: Response
+) {
   const capacityData = await accommodationService.getTotalCapacity();
+
+  res.status(httpStatus.OK).send(capacityData);
+}
+
+export async function getHotels(
+  req: AuthenticatedRequest,
+  res: Response
+) {
+  const capacityData = await accommodationService.getHotels();
 
   res.status(httpStatus.OK).send(capacityData);
 }

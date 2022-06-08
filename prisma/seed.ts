@@ -16,7 +16,21 @@ async function main() {
     });
   }
 
-  console.log({ event });
+  let hotels = await prisma.hotel.findMany();
+  let hotel: { id: number; name: string; imageUrl: string; };
+  if (hotels.length === 0) {
+    hotel = await prisma.hotel.create({
+      data: {
+        name: 'Hotel Seed',
+        imageUrl: 'https://files.driveneducation.com.br/images/logo-rounded.png',
+      },
+    });
+  
+  } else {
+    hotel = hotels[0];
+  } 
+
+  console.log({ event, hotel });
 }
 
 main()

@@ -36,6 +36,7 @@ async function findRooms(hotelId?: number) {
       id: true,
       code: true,
       hotelId: true,
+      Reservation: true,
       AccommodationTypeRoom: {
         select: {
           AccommodationType: true,

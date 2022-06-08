@@ -34,6 +34,7 @@ async function getRooms(hotelId?: number) {
     hotelId: room.hotelId,
     accommodationType: room.AccommodationTypeRoom[0].AccommodationType.name,
     capacity: room.AccommodationTypeRoom[0].AccommodationType.capacity,
+    reservations: room.Reservation,
   }));
 
   return roomsMapped;
@@ -116,6 +117,7 @@ const accommodationService = {
   getTotalCapacity,
   createOrUpdateBooking,
   getReservationById,
+  getRooms
 };
 
 export default accommodationService;

@@ -21,6 +21,16 @@ export async function getHotels(
   res.status(httpStatus.OK).send(capacityData);
 }
 
+export async function getRoomsByHotelId(
+  req: AuthenticatedRequest,
+  res: Response
+) {
+  const { hotelId } = req.params;
+  const rooms = await accommodationService.getRooms(Number(hotelId));
+
+  res.status(httpStatus.OK).send(rooms);
+}
+
 export async function postCreateOrUpdateReservation(
   req: AuthenticatedRequest,
   res: Response

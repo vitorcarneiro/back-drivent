@@ -10,6 +10,7 @@ async function getHotels() {
   const hotels = hotelsRooms.map((hotel) => ({
     id: hotel.id,
     name: hotel.name,
+    imageUrl: hotel.imageUrl,
     accommodationTypes: accommodationTypes(hotel.Room),
     rooms: hotel.Room.length,
     capacity:

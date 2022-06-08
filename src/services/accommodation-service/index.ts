@@ -17,7 +17,9 @@ async function getHotels() {
       hotel.Room.length > 0
         ? hotel.Room.reduce((prev, curr) => prev + curr.AccommodationTypeRoom[0].AccommodationType.capacity, 0)
         : 0,
-    reservations: 0
+    reservations: hotel.Room.length > 0 ? hotel.Room
+      .map(room => room.Reservation.length)
+      .reduce((prev, curr) => prev + curr) : 0,    
   }));
 
   return hotels;

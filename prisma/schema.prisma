@@ -71,9 +71,10 @@ model Address {
 }
 
 model Hotel {
-  id   Int    @id @default(autoincrement())
-  name String @unique @db.VarChar(255)
-  Room Room[]
+  id        Int       @id @default(autoincrement())
+  name      String    @unique @db.VarChar(255)
+  imageUrl  String?
+  Room      Room[]
 }
 
 model Room {

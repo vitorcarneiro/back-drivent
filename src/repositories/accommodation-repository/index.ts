@@ -36,6 +36,7 @@ async function findRooms(hotelId?: number) {
       id: true,
       code: true,
       hotelId: true,
+      Reservation: true,
       AccommodationTypeRoom: {
         select: {
           AccommodationType: true,
@@ -43,15 +44,15 @@ async function findRooms(hotelId?: number) {
       },
     },
   });
-};
+}
 
 async function transactionsWithHotel() {
   return prisma.transaction.aggregate({
     where: {
-      hotelSelected : "Com Hotel"
+      hotelSelected: "Com Hotel",
     },
     _count: true,
-  })
+  });
 }
 
 async function createUserReservation(bookingData: ReservationData) {
@@ -84,6 +85,17 @@ async function findEventUserReservations(
   });
 }
 
+async function updateReservationByUserId(roomId: number, userId: number) {
+  await prisma.reservation.update({
+    where: {
+      userId,
+    },
+    data: {
+      roomId,
+    },
+  });
+}
+
 const accommodationRepository = {
   findRoomsByHotels,
   findRooms,
@@ -91,7 +103,8 @@ const accommodationRepository = {
   createUserTransaction,
   findEventUserReservations,
   getReservationById,
-  transactionsWithHotel
+  transactionsWithHotel,
+  updateReservationByUserId,
 };
 
 export default accommodationRepository;

@@ -5,6 +5,8 @@ import {
   getHotels,
   postCreateOrUpdateReservation,
   getReservationById,
+  getRoomsByHotelId,
+  updateReservationByUserId,
 } from "@/controllers";
 import { createBookingSchema } from "@/schemas";
 
@@ -19,6 +21,8 @@ accommodationRouter
     validateBody(createBookingSchema),
     postCreateOrUpdateReservation
   )
-  .get("/reservation", getReservationById);
+  .get("/reservation", getReservationById)
+  .get("/rooms/:hotelId", getRoomsByHotelId)
+  .patch("/rooms/:roomId", updateReservationByUserId);
 
 export { accommodationRouter };

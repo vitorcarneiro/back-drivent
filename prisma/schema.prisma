@@ -71,15 +71,15 @@ model Address {
 }
 
 model Hotel {
-  id        Int       @id @default(autoincrement())
-  name      String    @unique @db.VarChar(255)
-  imageUrl  String?
-  Room      Room[]
+  id       Int     @id @default(autoincrement())
+  name     String  @unique @db.VarChar(255)
+  imageUrl String?
+  Room     Room[]
 }
 
 model Room {
   id                    Int                     @id @default(autoincrement())
-  code                  String                  @unique @db.VarChar(255)
+  code                  String                  @db.VarChar(255)
   hotelId               Int
   Hotel                 Hotel                   @relation(fields: [hotelId], references: [id])
   AccommodationTypeRoom AccommodationTypeRoom[]

@@ -1,12 +1,18 @@
 import { notFoundError } from "@/errors";
 import accommodationRepository from "@/repositories/accommodation-repository";
-import { AccommodationType, AccommodationTypeRoom, Prisma, Reservation, Transaction } from "@prisma/client";
+import {
+  AccommodationType,
+  AccommodationTypeRoom,
+  Prisma,
+  Reservation,
+  Transaction,
+} from "@prisma/client";
 
 async function getHotels() {
   const hotelsRooms = await accommodationRepository.findRoomsByHotels();
 
   if (hotelsRooms.length === 0) return hotelsRooms;
-  
+
   const hotels = hotelsRooms.map((hotel) => ({
     id: hotel.id,
     name: hotel.name,
@@ -15,11 +21,18 @@ async function getHotels() {
     rooms: hotel.Room.length,
     capacity:
       hotel.Room.length > 0
-        ? hotel.Room.reduce((prev, curr) => prev + curr.AccommodationTypeRoom[0].AccommodationType.capacity, 0)
+        ? hotel.Room.reduce(
+            (prev, curr) =>
+              prev + curr.AccommodationTypeRoom[0].AccommodationType.capacity,
+            0
+          )
         : 0,
-    reservations: hotel.Room.length > 0 ? hotel.Room
-      .map(room => room.Reservation.length)
-      .reduce((prev, curr) => prev + curr) : 0,    
+    reservations:
+      hotel.Room.length > 0
+        ? hotel.Room.map((room) => room.Reservation.length).reduce(
+            (prev, curr) => prev + curr
+          )
+        : 0,
   }));
 
   return hotels;
@@ -34,6 +47,7 @@ async function getRooms(hotelId?: number) {
     hotelId: room.hotelId,
     accommodationType: room.AccommodationTypeRoom[0].AccommodationType.name,
     capacity: room.AccommodationTypeRoom[0].AccommodationType.capacity,
+    reservations: room.Reservation,
   }));
 
   return roomsMapped;
@@ -42,8 +56,10 @@ async function getRooms(hotelId?: number) {
 function accommodationTypes(hotelRooms: any[]): string[] {
   const types: string[] = [];
 
-  const rooms = hotelRooms.map((room) => (room.AccommodationTypeRoom[0].AccommodationType.name))
-  
+  const rooms = hotelRooms.map(
+    (room) => room.AccommodationTypeRoom[0].AccommodationType.name
+  );
+
   for (const room of rooms) {
     if (types.includes(room)) continue;
     types.push(room);
@@ -56,8 +72,9 @@ async function getTotalCapacity() {
   const rooms = await getRooms();
 
   const capacity = rooms.reduce((prev, curr) => prev + curr.capacity, 0);
-  
-  const reservations = (await (accommodationRepository.transactionsWithHotel()))._count;
+
+  const reservations = (await accommodationRepository.transactionsWithHotel())
+    ._count;
 
   return { capacity, reservations };
 }
@@ -91,6 +108,10 @@ async function getReservationById(userId: number) {
   return reservation;
 }
 
+async function updateReservationByUserId(roomId: number, userId: number) {
+  await accommodationRepository.updateReservationByUserId(roomId, userId);
+}
+
 export interface ReservationData {
   roomId: number | null;
   userId: number;
@@ -116,6 +137,8 @@ const accommodationService = {
   getTotalCapacity,
   createOrUpdateBooking,
   getReservationById,
+  getRooms,
+  updateReservationByUserId,
 };
 
 export default accommodationService;

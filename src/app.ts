@@ -2,13 +2,14 @@ import 'reflect-metadata';
 import 'express-async-errors';
 import express, { Express } from 'express';
 import cors from 'cors';
+import { redisSeed } from "./redis/seed"
 
 import { loadEnv, connectDb, disconnectDB, redis, connectRedis, disconnectRedis } from '@/config';
 
 loadEnv();
 
 import { handleApplicationErrors } from '@/middlewares';
-import { usersRouter, authenticationRouter, eventsRouter, enrollmentsRouter, accommodationRouter} from '@/routers';
+import { usersRouter, authenticationRouter, eventsRouter, enrollmentsRouter, accommodationRouter } from '@/routers';
 
 const app = express();
 app
@@ -26,7 +27,7 @@ app
   .use('/enrollments', enrollmentsRouter)
   .use('/accommodations', accommodationRouter)
   .use(handleApplicationErrors);
-
+redisSeed()
 export function init(): Promise<Express> {
   connectDb();
   connectRedis();

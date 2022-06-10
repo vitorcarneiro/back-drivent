@@ -23,16 +23,16 @@ async function getHotels() {
     capacity:
       hotel.Room.length > 0
         ? hotel.Room.reduce(
-            (prev: any, curr: { AccommodationTypeRoom: { AccommodationType: { capacity: any; }; }[]; }) =>
-              prev + curr.AccommodationTypeRoom[0].AccommodationType.capacity,
-            0
-          )
+          (prev: any, curr: { AccommodationTypeRoom: { AccommodationType: { capacity: any; }; }[]; }) =>
+            prev + curr.AccommodationTypeRoom[0].AccommodationType.capacity,
+          0
+        )
         : 0,
     reservations:
       hotel.Room.length > 0
         ? hotel.Room.map((room: { Reservation: string | any[]; }) => room.Reservation.length).reduce(
-            (prev: any, curr: any) => prev + curr
-          )
+          (prev: any, curr: any) => prev + curr
+        )
         : 0,
   }));
 
@@ -110,6 +110,7 @@ async function getReservationById(userId: number) {
 }
 
 async function updateReservationByUserId(roomId: number, userId: number) {
+
   await accommodationRepository.updateReservationByUserId(roomId, userId);
 }
 

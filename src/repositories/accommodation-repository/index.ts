@@ -6,7 +6,7 @@ export type CreateTransactionData = Omit<Transaction, "id">;
 
 async function findRoomsByHotels() {
   const cachedHotels = await redis.get("hotels");
-  
+
   if (!cachedHotels) {
     const hotels = await prisma.hotel.findMany({
       include: {
@@ -32,7 +32,7 @@ async function findRoomsByHotels() {
     });
 
     await redis.set("hotels", JSON.stringify(hotels));
-    
+
     return hotels;
   }
 
@@ -104,6 +104,31 @@ async function updateReservationByUserId(roomId: number, userId: number) {
       roomId,
     },
   });
+
+  const hotels = await prisma.hotel.findMany({
+    include: {
+      Room: {
+        select: {
+          id: true,
+          code: true,
+          Reservation: {
+            select: {
+              id: true,
+              userId: true,
+              eventId: true,
+            },
+          },
+          AccommodationTypeRoom: {
+            select: {
+              AccommodationType: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  await redis.set("hotels", JSON.stringify(hotels));
 }
 
 async function getHotelReviewByUserId(userId?: number) {

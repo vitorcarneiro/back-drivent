@@ -35,6 +35,7 @@ export function init(): Promise<Express> {
 
 export async function close(): Promise<void> {
   await disconnectDB();
+  await disconnectRedis();
 }
 
 export default app;

@@ -5,6 +5,7 @@ import {
   AccommodationTypeRoom,
   Prisma,
   Reservation,
+  Room,
   Transaction,
 } from "@prisma/client";
 
@@ -13,7 +14,7 @@ async function getHotels() {
 
   if (hotelsRooms.length === 0) return hotelsRooms;
 
-  const hotels = hotelsRooms.map((hotel) => ({
+  const hotels = hotelsRooms.map((hotel: { id: number; name: string; imageUrl?: string; Room: any[]; }) => ({
     id: hotel.id,
     name: hotel.name,
     imageUrl: hotel.imageUrl,
@@ -22,15 +23,15 @@ async function getHotels() {
     capacity:
       hotel.Room.length > 0
         ? hotel.Room.reduce(
-            (prev, curr) =>
+            (prev: any, curr: { AccommodationTypeRoom: { AccommodationType: { capacity: any; }; }[]; }) =>
               prev + curr.AccommodationTypeRoom[0].AccommodationType.capacity,
             0
           )
         : 0,
     reservations:
       hotel.Room.length > 0
-        ? hotel.Room.map((room) => room.Reservation.length).reduce(
-            (prev, curr) => prev + curr
+        ? hotel.Room.map((room: { Reservation: string | any[]; }) => room.Reservation.length).reduce(
+            (prev: any, curr: any) => prev + curr
           )
         : 0,
   }));
@@ -112,6 +113,15 @@ async function updateReservationByUserId(roomId: number, userId: number) {
   await accommodationRepository.updateReservationByUserId(roomId, userId);
 }
 
+async function getHotelReviewByUserId(userId?: number) {
+  const roomId = await accommodationRepository.getHotelReviewByUserId(userId);
+
+
+  return roomId;
+}
+
+
+
 export interface ReservationData {
   roomId: number | null;
   userId: number;
@@ -139,6 +149,7 @@ const accommodationService = {
   getReservationById,
   getRooms,
   updateReservationByUserId,
+  getHotelReviewByUserId,
 };
 
 export default accommodationService;

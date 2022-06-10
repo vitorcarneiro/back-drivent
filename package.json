@@ -8,7 +8,7 @@
     "build": "ttsc -p tsconfig.build.json",
     "prepare": "husky install",
     "start": "node dist/server.js",
-    "migration:run": "prisma migrate deploy",
+    "migration:run": "npm run dev:load-envs prisma migrate deploy",
     "migration:generate": "npm run dev:load-envs prisma migrate dev",
     "seed": "npm run dev:load-envs prisma db seed",
     "lint:staged": "lint-staged",
@@ -28,9 +28,9 @@
     "dev:postgres:down": "npm run dev:compose -- down",
     "dev:load-envs": "dotenv -e .env.development",
     "dev:migration:run": "npm run dev:compose -- run drivent-development npm run dev:load-envs prisma migrate deploy",
-    "dev:migration:generate": "npm run dev:compose -- rnun drivent-development npm run dev:load-envs prisma migrate dev",
-    "dev:prisma:studio": "npm run dev:compose -- run drivent-development npm run dev:load-envs prisma studio",
-    "dev:seed": "npm run dev:compose -- run drivent-development npm run dev:load-envs prisma db seed",
+    "dev:migration:generate": "npm run dev:compose -- drivent-development npm run dev:load-envs prisma migrate dev",
+    "dev:prisma:studio": "npm run dev:compose -- drivent-development npm run dev:load-envs prisma studio",
+    "dev:seed": "npm run dev:load-envs prisma db seed",
     "dev:docker": "npm run dev:compose -- up",
     "dev:docker:down": "npm run dev:compose -- down",
     "dev": "NODE_ENV=development nodemon --watch 'src/' --exec 'ts-node -r tsconfig-paths/register ./src/server.ts' -e ts",
@@ -59,6 +59,7 @@
     "@types/jest": "^26.0.23",
     "@types/jsonwebtoken": "^8.5.8",
     "@types/node": "^17.0.34",
+    "@types/redis": "^4.0.11",
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.25.0",
     "@typescript-eslint/parser": "^5.25.0",
@@ -97,6 +98,7 @@
     "http-status": "^1.5.2",
     "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
+    "redis": "^4.1.0",
     "reflect-metadata": "^0.1.13"
   }
 }

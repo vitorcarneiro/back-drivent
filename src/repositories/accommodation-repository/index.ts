@@ -1,32 +1,42 @@
-import { prisma } from "@/config";
+import { prisma, redis } from "@/config";
 import { Transaction } from "@prisma/client";
 import { CreateOrUpdateBooking, ReservationData } from "@/services";
 
 export type CreateTransactionData = Omit<Transaction, "id">;
 
 async function findRoomsByHotels() {
-  return prisma.hotel.findMany({
-    include: {
-      Room: {
-        select: {
-          id: true,
-          code: true,
-          Reservation: {
-            select: {
-              id: true,
-              userId: true,
-              eventId: true,
+  const cachedHotels = await redis.get("hotels");
+  
+  if (!cachedHotels) {
+    const hotels = await prisma.hotel.findMany({
+      include: {
+        Room: {
+          select: {
+            id: true,
+            code: true,
+            Reservation: {
+              select: {
+                id: true,
+                userId: true,
+                eventId: true,
+              },
             },
-          },
-          AccommodationTypeRoom: {
-            select: {
-              AccommodationType: true,
+            AccommodationTypeRoom: {
+              select: {
+                AccommodationType: true,
+              },
             },
           },
         },
       },
-    },
-  });
+    });
+
+    await redis.set("hotels", JSON.stringify(hotels));
+    
+    return hotels;
+  }
+
+  return JSON.parse(cachedHotels);
 }
 
 async function findRooms(hotelId?: number) {

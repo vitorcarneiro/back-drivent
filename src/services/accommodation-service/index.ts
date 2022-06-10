@@ -113,6 +113,15 @@ async function updateReservationByUserId(roomId: number, userId: number) {
   await accommodationRepository.updateReservationByUserId(roomId, userId);
 }
 
+async function getHotelReviewByUserId(userId?: number) {
+  const roomId = await accommodationRepository.getHotelReviewByUserId(userId);
+
+
+  return roomId;
+}
+
+
+
 export interface ReservationData {
   roomId: number | null;
   userId: number;
@@ -140,6 +149,7 @@ const accommodationService = {
   getReservationById,
   getRooms,
   updateReservationByUserId,
+  getHotelReviewByUserId,
 };
 
 export default accommodationService;

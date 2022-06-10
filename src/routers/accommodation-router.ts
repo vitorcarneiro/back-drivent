@@ -7,6 +7,7 @@ import {
   getReservationById,
   getRoomsByHotelId,
   updateReservationByUserId,
+  getReviewByUserId
 } from "@/controllers";
 import { createBookingSchema } from "@/schemas";
 
@@ -23,6 +24,7 @@ accommodationRouter
   )
   .get("/reservation", getReservationById)
   .get("/rooms/:hotelId", getRoomsByHotelId)
-  .patch("/rooms/:roomId", updateReservationByUserId);
+  .patch("/rooms/:roomId", updateReservationByUserId)
+  .get("/:userId/review", getReviewByUserId);
 
 export { accommodationRouter };

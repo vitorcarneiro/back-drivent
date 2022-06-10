@@ -22,16 +22,16 @@ async function getHotels() {
     capacity:
       hotel.Room.length > 0
         ? hotel.Room.reduce(
-            (prev, curr) =>
-              prev + curr.AccommodationTypeRoom[0].AccommodationType.capacity,
-            0
-          )
+          (prev, curr) =>
+            prev + curr.AccommodationTypeRoom[0].AccommodationType.capacity,
+          0
+        )
         : 0,
     reservations:
       hotel.Room.length > 0
         ? hotel.Room.map((room) => room.Reservation.length).reduce(
-            (prev, curr) => prev + curr
-          )
+          (prev, curr) => prev + curr
+        )
         : 0,
   }));
 
@@ -112,6 +112,15 @@ async function updateReservationByUserId(roomId: number, userId: number) {
   await accommodationRepository.updateReservationByUserId(roomId, userId);
 }
 
+async function getHotelReviewByUserId(userId?: number) {
+  const roomId = await accommodationRepository.getHotelReviewByUserId(userId);
+
+
+  return roomId;
+}
+
+
+
 export interface ReservationData {
   roomId: number | null;
   userId: number;
@@ -139,6 +148,7 @@ const accommodationService = {
   getReservationById,
   getRooms,
   updateReservationByUserId,
+  getHotelReviewByUserId,
 };
 
 export default accommodationService;

@@ -96,6 +96,27 @@ async function updateReservationByUserId(roomId: number, userId: number) {
   });
 }
 
+async function getHotelReviewByUserId(userId?: number) {
+  return prisma.reservation.findMany({
+    where: { userId },
+    select: {
+      Room: {
+        select: {
+          id: true,
+          code: true,
+          Reservation: true,
+          Hotel: true,
+          AccommodationTypeRoom: {
+            select: {
+              AccommodationType: true
+            }
+          }
+        },
+      }
+    },
+  });
+}
+
 const accommodationRepository = {
   findRoomsByHotels,
   findRooms,
@@ -105,6 +126,7 @@ const accommodationRepository = {
   getReservationById,
   transactionsWithHotel,
   updateReservationByUserId,
+  getHotelReviewByUserId,
 };
 
 export default accommodationRepository;

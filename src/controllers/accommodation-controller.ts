@@ -59,3 +59,14 @@ export async function updateReservationByUserId(
 
   res.sendStatus(httpStatus.OK);
 }
+
+export async function getReviewByUserId(
+  req: AuthenticatedRequest,
+  res: Response
+) {
+  const { userId } = req.params;
+
+  const userHotelInfo = await accommodationService.getHotelReviewByUserId(Number(userId));
+
+  res.send({ userHotelInfo });
+}

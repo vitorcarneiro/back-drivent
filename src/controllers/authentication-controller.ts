@@ -17,7 +17,6 @@ export async function signInGithub(req: Request, res: Response) {
   const loginGitHubData: CreateOauthData = req.body;
 
   const session = await authenticationService.createGitHub(loginGitHubData);
-  console.log(session);
 
   res.status(httpStatus.OK).send(session);
 }

@@ -1,6 +1,12 @@
 FROM node:16.15
+
 WORKDIR /usr/src/drivent
-COPY ./package*.json ./
+
+COPY ./package.json .
 COPY ./prisma ./prisma
-RUN npm install --force
 COPY . .
+
+EXPOSE 4000
+
+RUN npm i
+RUN npx prisma generate

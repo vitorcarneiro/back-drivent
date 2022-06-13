@@ -31,6 +31,7 @@
     "dev:migration:generate": "npm run dev:compose -- drivent-development npm run dev:load-envs prisma migrate dev",
     "dev:prisma:studio": "npm run dev:compose -- drivent-development npm run dev:load-envs prisma studio",
     "dev:seed": "npm run dev:load-envs prisma db seed",
+    "dev:docker:build": "npm run dev:compose -- up --build",
     "dev:docker": "npm run dev:compose -- up",
     "dev:docker:down": "npm run dev:compose -- down",
     "dev": "NODE_ENV=development nodemon --watch 'src/' --exec 'ts-node -r tsconfig-paths/register ./src/server.ts' -e ts",

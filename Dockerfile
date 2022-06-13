@@ -1,13 +1,17 @@
 # build step
 
 FROM node:16.15 as build
+
 WORKDIR /usr/src/drivent
+
 COPY ./package*.json ./
 COPY ./tsconfig*.json ./
 COPY ./prisma ./prisma
 COPY ./.husky ./
-RUN npm install --force
 COPY . .
+
+RUN npm install --force
+RUN npx prisma generate
 RUN npm run build
 
 # run step

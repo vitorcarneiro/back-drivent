@@ -1,4 +1,4 @@
-import { notFoundError } from "@/errors";
+import { notFoundError, conflictError } from "@/errors";
 import accommodationRepository from "@/repositories/accommodation-repository";
 import {
   AccommodationType,
@@ -14,27 +14,36 @@ async function getHotels() {
 
   if (hotelsRooms.length === 0) return hotelsRooms;
 
-  const hotels = hotelsRooms.map((hotel: { id: number; name: string; imageUrl?: string; Room: any[]; }) => ({
-    id: hotel.id,
-    name: hotel.name,
-    imageUrl: hotel.imageUrl,
-    accommodationTypes: accommodationTypes(hotel.Room),
-    rooms: hotel.Room.length,
-    capacity:
-      hotel.Room.length > 0
-        ? hotel.Room.reduce(
-          (prev: any, curr: { AccommodationTypeRoom: { AccommodationType: { capacity: any; }; }[]; }) =>
-            prev + curr.AccommodationTypeRoom[0].AccommodationType.capacity,
-          0
-        )
-        : 0,
-    reservations:
-      hotel.Room.length > 0
-        ? hotel.Room.map((room: { Reservation: string | any[]; }) => room.Reservation.length).reduce(
-          (prev: any, curr: any) => prev + curr
-        )
-        : 0,
-  }));
+  const hotels = hotelsRooms.map(
+    (hotel: { id: number; name: string; imageUrl?: string; Room: any[] }) => ({
+      id: hotel.id,
+      name: hotel.name,
+      imageUrl: hotel.imageUrl,
+      accommodationTypes: accommodationTypes(hotel.Room),
+      rooms: hotel.Room.length,
+      capacity:
+        hotel.Room.length > 0
+          ? hotel.Room.reduce(
+              (
+                prev: any,
+                curr: {
+                  AccommodationTypeRoom: {
+                    AccommodationType: { capacity: any };
+                  }[];
+                }
+              ) =>
+                prev + curr.AccommodationTypeRoom[0].AccommodationType.capacity,
+              0
+            )
+          : 0,
+      reservations:
+        hotel.Room.length > 0
+          ? hotel.Room.map(
+              (room: { Reservation: string | any[] }) => room.Reservation.length
+            ).reduce((prev: any, curr: any) => prev + curr)
+          : 0,
+    })
+  );
 
   return hotels;
 }
@@ -110,18 +119,25 @@ async function getReservationById(userId: number) {
 }
 
 async function updateReservationByUserId(roomId: number, userId: number) {
+  const room = await accommodationRepository.getRoomById(roomId);
+  console.log(room);
+  console.log(room.AccommodationTypeRoom);
 
-  await accommodationRepository.updateReservationByUserId(roomId, userId);
+  if (
+    room.Reservation.length <
+    room.AccommodationTypeRoom[0].AccommodationType.capacity
+  ) {
+    await accommodationRepository.updateReservationByUserId(roomId, userId);
+  } else {
+    throw conflictError("The room has been fully occupatedy");
+  }
 }
 
 async function getHotelReviewByUserId(userId?: number) {
   const roomId = await accommodationRepository.getHotelReviewByUserId(userId);
 
-
   return roomId;
 }
-
-
 
 export interface ReservationData {
   roomId: number | null;

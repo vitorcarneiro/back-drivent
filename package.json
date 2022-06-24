@@ -12,11 +12,13 @@
     "migration:generate": "npm run dev:load-envs prisma migrate dev",
     "seed": "npm run dev:load-envs prisma db seed",
     "lint:staged": "lint-staged",
-    "test": "jest --passWithNoTests --runInBand",
+    "test": "jest --passWithNoTests --runInBand --forceExit",
     "test:migration:run": "npm run test:load-envs prisma migrate deploy",
     "test:migration:generate": "npm run test:load-envs prisma migrate dev",
     "test:watch": "jest --watch --passWithNoTests --runInBand",
+    "test:docker:build": "npm run test:compose -- up --build",
     "test:docker": "npm run test:compose -- up",
+    "test:docker:down": "npm run test:compose -- down",
     "test:compose": "docker-compose -f docker-compose.test.yml --env-file .env.test",
     "test:postgres": "npm run test:compose -- up -d drivent-postgres-test",
     "test:postgres:down": "npm run test:compose -- down -v",
@@ -35,8 +37,13 @@
     "dev:docker": "npm run dev:compose -- up",
     "dev:docker:down": "npm run dev:compose -- down",
     "dev": "NODE_ENV=development nodemon --watch 'src/' --exec 'ts-node -r tsconfig-paths/register ./src/server.ts' -e ts",
+    "dev:test": "NODE_ENV=test nodemon --watch 'src/' --exec 'ts-node -r tsconfig-paths/register ./src/server.ts' -e ts",
     "ci:build": "docker-compose -f docker-compose.test.yml build",
-    "ci:test": "docker-compose -f docker-compose.test.yml run drivent-test bash -c 'npm run test:migration:run && npm test'"
+    "ci:test": "docker-compose -f docker-compose.test.yml run drivent-test bash -c 'npm run test:migration:run && npm test'",
+    "local:load-envs": "dotenv -e .env.local",
+    "local:migration:generate": "npm run local:load-envs prisma migrate dev",
+    "local:seed": "npm run local:load-envs prisma db && npm run local:load-envs -- ts-node prisma/seed.ts",
+    "local": "NODE_ENV=local nodemon --watch 'src/' --exec 'ts-node -r tsconfig-paths/register ./src/server.ts' -e ts"
   },
   "keywords": [
     "driven.t",
@@ -50,7 +57,8 @@
   "author": "Alexandre Nunes",
   "license": "ISC",
   "prisma": {
-    "seed": "npm run dev:load-envs -- ts-node prisma/seed.ts"
+    "seed": "npm run dev:load-envs -- ts-node prisma/seed.ts",
+    "seed:test": "npm run test:load-envs -- ts-node prisma/seed.ts"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.3.1",
@@ -91,7 +99,7 @@
     "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
-    "dayjs": "^1.11.2",
+    "dayjs": "^1.11.3",
     "dotenv": "^16.0.1",
     "dotenv-expand": "^8.0.3",
     "express": "^4.18.1",

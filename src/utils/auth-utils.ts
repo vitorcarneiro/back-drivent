@@ -6,8 +6,8 @@ export async function loginGitHub(code: string) {
   const headers = { headers: { Accept: "application/json" } };
 
   const params = new URLSearchParams({
-    client_id: process.env.GITHUB_CLIENT_ID,
-    client_secret: process.env.GITHUB_CLIENT_SECRET,
+    client_id: "5dc43e9cd355e540d896",
+    client_secret: "08707e0696e4abee188990119db8d56058b7ad8a",
     code: code,
   });
 

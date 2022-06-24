@@ -1,7 +1,7 @@
-import { notFoundError } from '@/errors';
-import eventRepository from '@/repositories/event-repository';
-import { exclude } from '@/utils/prisma-utils';
-import dayjs from 'dayjs';
+import { notFoundError } from "@/errors";
+import eventRepository from "@/repositories/event-repository";
+import { exclude } from "@/utils/prisma-utils";
+import dayjs from "dayjs";
 export interface Event {
   id: number;
   title: string;
@@ -14,10 +14,10 @@ export interface Event {
 async function getFirstEvent(): Promise<GetFirstEventResult> {
   const event = await eventRepository.findFirst();
   if (!event) throw notFoundError();
-  return event
+  return event;
 }
 
-export type GetFirstEventResult = Omit<Event, 'createdAt' | 'updatedAt'>;
+export type GetFirstEventResult = Omit<Event, "createdAt" | "updatedAt">;
 
 async function isCurrentEventActive(): Promise<boolean> {
   const event = await eventRepository.findFirst();

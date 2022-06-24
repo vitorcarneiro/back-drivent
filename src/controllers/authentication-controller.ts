@@ -20,3 +20,15 @@ export async function signInGithub(req: Request, res: Response) {
 
   res.status(httpStatus.OK).send(session);
 }
+
+export async function logOut(req: Request, res: Response) {
+  const { userId } = req.params
+  try {
+    if (userId) {
+      await authenticationService.logOut(parseInt(userId));
+    }
+  } catch (error) {
+    console.log(error)
+  }
+  res.status(httpStatus.OK).send("Deleted");
+}

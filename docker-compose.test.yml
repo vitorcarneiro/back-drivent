@@ -1,17 +1,26 @@
-version: '3'
+version: "3"
 services:
   drivent-postgres-test:
     image: postgres:13-alpine
+    container_name: drivent-postgres-test
     environment:
       POSTGRES_USER: ${POSTGRES_USERNAME}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DATABASE}
-      DATABASE_URL: ${DATABASE_URL}
+      POSTGRES_DATABASE: drivent_test
     ports:
-      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+      - 5433:${POSTGRES_PORT}
     volumes:
-      - ~/data/drivent/postgres-test:/var/lib/postgresql/data
+      - drivent-postgres-data:/var/lib/postgresql/data
     command: postgres -p ${POSTGRES_PORT}
+  drivent-redis-test:
+    image: redis:6.2-alpine
+    container_name: drivent-redis-test
+    restart: always
+    ports:
+      - 6380:6379
+    command: redis-server --save 20 1 --loglevel warning --requirepass 123456
+    volumes:
+      - drivent-redis-test-data:/data
   drivent-test:
     build:
       context: .
@@ -19,19 +28,31 @@ services:
     container_name: drivent-test
     depends_on:
       - drivent-postgres-test
+      - drivent-redis-test
     logging:
-      driver: 'json-file'
+      driver: "json-file"
       options:
-        max-size: '10m'
-        max-file: '5'
+        max-size: "10m"
+        max-file: "5"
     working_dir: /usr/src/drivent
-    command: bash -c "npm run test:migration:run && npm test"
+    command: bash -c "npm run test:migration:generate && npm run test:load-envs prisma db seed && npm run test"
     environment:
       NODE_ENV: test
-      POSTGRES_USERNAME: ${POSTGRES_USERNAME}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_DATABASE: ${POSTGRES_DATABASE}
-      POSTGRES_PORT: ${POSTGRES_PORT}
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: 123456
+      REDIS_URL: redis://default:123456@drivent-redis-test:6379
+    volumes:
+      - ./src:/usr/src/drivent/src
+      - ./prisma:/usr/src/drivent/prisma
+      - ./.env.test:/usr/src/drivent/.env.test
+      - ./.eslintrc.js:/usr/src/drivent/.eslintrc.js
+      - ./.eslintignore:/usr/src/drivent/.eslintignore
+      - ./.prettierrc.js:/usr/src/drivent/.prettierrc.js
+      - ./tsconfig.json:/usr/src/drivent/tsconfig.json
+    ports:
+      - 4000:4000
+volumes:
+  drivent-postgres-data:
+  drivent-redis-test-data:

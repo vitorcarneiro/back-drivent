@@ -1,4 +1,4 @@
-import { singInPost, signInGithub } from "@/controllers";
+import { singInPost, signInGithub, logOut } from "@/controllers";
 import { validateBody } from "@/middlewares";
 import { signInSchema } from "@/schemas";
 import { oauthSchema } from "@/schemas/oauth-schema";
@@ -12,5 +12,5 @@ authenticationRouter.post(
   validateBody(oauthSchema),
   signInGithub
 );
-
+authenticationRouter.delete("/log-out/:userId", logOut);
 export { authenticationRouter };

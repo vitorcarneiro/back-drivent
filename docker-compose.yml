@@ -1,5 +1,29 @@
 version: "3"
 services:
+  drivent-postgres-production:
+    container_name: drivent-postgres-production
+    image: postgres:13-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DATABASE}
+      GH_CLIENT_ID: ${GH_CLIENT_ID}
+      GH_CLIENT_SECRET: ${GH_CLIENT_SECRET}
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    volumes:
+      - /usr/local/drivent-pg/data:/var/lib/postgresql/data
+    command: postgres -p ${POSTGRES_PORT}
+  drivent-redis-production:
+    container_name: drivent-redis-production
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - 6380:${REDIS_PORT}
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - drivent-redis-production-data:/data
   drivent-production:
     build:
       context: .
@@ -11,32 +35,12 @@ services:
         max-size: "10m"
         max-file: "5"
     working_dir: /usr/src/drivent
-    command: bash -c "npx prisma migrate dev && npx prisma db seed && npm run start"
+    command: bash -c "npx prisma generate && npx prisma migrate dev && npx prisma db seed && npm run start"
     restart: always
     environment:
       NODE_ENV: production
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
-  drivent-redis-production:
-    image: redis:6.2-alpine
-    container_name: drivent-redis-production
-    restart: always
-    ports:
-      - 6380:${REDIS_PORT}
-    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
-    volumes:
-      - drivent-redis-production-data:/data
-  drivent-postgres-production:
-    image: postgres:13-alpine
-    environment:
-      POSTGRES_USER: ${POSTGRES_USERNAME}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DATABASE}
-    ports:
-      - 5433:${POSTGRES_PORT}
-    volumes:
-      - /usr/local/drivent-pg/data:/var/lib/postgresql/data
-    command: postgres -p ${POSTGRES_PORT}
   drivent-nginx:
     image: nginx
     ports:

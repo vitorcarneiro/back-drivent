@@ -10,10 +10,12 @@ export async function createUser({
   password,
 }: CreateUserParams): Promise<User> {
   await canEnrollOrFail();
-
+  
   const user = await validateUniqueEmailOrFail(email);
+  
   const hashedPassword = await bcrypt.hash(password, 12);
-  if (user.githubId) {
+  
+  if (user?.githubId) {
     return userRepository.updateUserData({
       email: user.email,
       password: hashedPassword,
@@ -28,6 +30,7 @@ export async function createUser({
 
 async function validateUniqueEmailOrFail(email: string) {
   const userWithSameEmail = await userRepository.findByEmail(email);
+  
   if (userWithSameEmail && !userWithSameEmail.githubId) {
     throw duplicatedEmailError();
   }

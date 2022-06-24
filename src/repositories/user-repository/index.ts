@@ -54,6 +54,22 @@ async function upsertUserGithubData(email: string, githubId: number) {
   return user;
 }
 
+async function upsertUserGithubDataWithoutEmail(githubId: number) {
+  const user = await prisma.user.upsert({
+    where: {
+      githubId,
+    },
+    update: {
+      githubId,
+    },
+    create: {
+      githubId,
+    },
+  });
+
+  return user;
+}
+
 async function updateUserData(userData: CreateUserData) {
   return await prisma.user.update({
     where: {
@@ -70,6 +86,7 @@ const userRepository = {
   create,
   findByGithubId,
   upsertUserGithubData,
+  upsertUserGithubDataWithoutEmail,
   updateUserData,
 };
 

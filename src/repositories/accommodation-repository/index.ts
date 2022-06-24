@@ -143,11 +143,28 @@ async function getHotelReviewByUserId(userId?: number) {
           Hotel: true,
           AccommodationTypeRoom: {
             select: {
-              AccommodationType: true
-            }
-          }
+              AccommodationType: true,
+            },
+          },
         },
-      }
+      },
+    },
+  });
+}
+
+async function getRoomById(roomId: number) {
+  return prisma.room.findFirst({
+    where: { id: roomId },
+    select: {
+      id: true,
+      code: true,
+      hotelId: true,
+      AccommodationTypeRoom: {
+        select: {
+          AccommodationType: true,
+        },
+      },
+      Reservation: true,
     },
   });
 }
@@ -162,6 +179,7 @@ const accommodationRepository = {
   transactionsWithHotel,
   updateReservationByUserId,
   getHotelReviewByUserId,
+  getRoomById,
 };
 
 export default accommodationRepository;

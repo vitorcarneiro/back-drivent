@@ -22,6 +22,7 @@ import {
   eventsRouter,
   enrollmentsRouter,
   accommodationRouter,
+  activityRouter,
 } from "@/routers";
 
 const app = express();
@@ -39,12 +40,14 @@ app
   .use("/event", eventsRouter)
   .use("/enrollments", enrollmentsRouter)
   .use("/accommodations", accommodationRouter)
+  .use("/activity", activityRouter)
   .use(handleApplicationErrors);
 
 export function init(): Promise<Express> {
   connectDb();
   connectRedis();
   redisSeed();
+
   return Promise.resolve(app);
 }
 

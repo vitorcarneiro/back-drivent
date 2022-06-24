@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 
 export async function redisSeed() {
   let cachedEvent = await redis.get("event");
+
   if (!cachedEvent) {
     const event = {
       id: 1,
@@ -13,6 +14,7 @@ export async function redisSeed() {
       startsAt: dayjs().toDate(),
       endsAt: dayjs().add(21, "days").toDate(),
     };
+
     await redis.set("event", JSON.stringify(event));
   }
 }

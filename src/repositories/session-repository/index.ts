@@ -7,8 +7,17 @@ async function create(data: Prisma.SessionUncheckedCreateInput) {
   });
 }
 
+async function deleteSessions(userId: number) {
+  return prisma.session.deleteMany({
+    where: {
+      userId
+    },
+  });
+}
+
 const sessionRepository = {
   create,
+  deleteSessions
 };
 
 export default sessionRepository;

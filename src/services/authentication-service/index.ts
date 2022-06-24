@@ -50,8 +50,6 @@ async function validatePasswordOrFail(password: string, userPassword: string) {
 }
 
 async function createGitHub(createGitHubData: CreateOauthData) {
-  const configuration = { expiresIn: 60 * 60 };
-
   const dataToken = await authUtils.loginGitHub(createGitHubData.code);
 
   const userDataGitHub = await authUtils.getUserDataGitHub(
@@ -62,8 +60,20 @@ async function createGitHub(createGitHubData: CreateOauthData) {
   const userGitHub = await userRepository.findByGithubId(userDataGitHub.id);
 
   if (!userGitHub) {
+    if (!userDataGitHub.email) {
+      const user = await userRepository.upsertUserGithubDataWithoutEmail(
+        userDataGitHub.id
+      );
+
+      delete user.password;
+
+      const token = await createSession(user.id);
+
+      return { token, user: { id: user.id, email: user?.email } };
+    }
+
     const user = await userRepository.upsertUserGithubData(
-      userDataGitHub.email,
+      userDataGitHub?.email,
       userDataGitHub.id
     );
 
@@ -71,13 +81,18 @@ async function createGitHub(createGitHubData: CreateOauthData) {
 
     const token = await createSession(user.id);
 
-    return { token, user: { id: user.id, email: user.email } };
+    return { token, user: { id: user.id, email: user?.email } };
   }
 
   delete userGitHub.password;
   const token = await createSession(userGitHub.id);
 
-  return { token, user: { id: userGitHub.id, email: userGitHub.email } };
+  return { token, user: { id: userGitHub.id, email: userGitHub?.email } };
+}
+
+async function logOut(userId: number) {
+  await sessionRepository.deleteSessions(userId);
+
 }
 
 export type SignInParams = Pick<User, "email" | "password">;
@@ -92,6 +107,7 @@ type GetUserOrFailResult = Pick<User, "id" | "email" | "password">;
 const authenticationService = {
   signIn,
   createGitHub,
+  logOut
 };
 
 export default authenticationService;
